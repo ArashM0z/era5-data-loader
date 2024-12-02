@@ -1,5 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "portfolio-repo"
-version = "0.1.0"
-requires-python = ">=3.11"
-dependencies = []
+name = "era5-loader"
+version = "0.3.0"
+description = "ERA5 reanalysis NetCDF/Zarr loader with bbox and time-range filtering"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Arash Mozhdehi" }]
+dependencies = [
+  "xarray>=2024.6",
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "netCDF4>=1.7",
+  "zarr>=2.18",
+  "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+cds = ["cdsapi>=0.7"]
+dev = ["pytest>=7", "pytest-cov>=4", "ruff>=0.5"]
+
+[project.scripts]
+era5-fetch = "era5.cli:fetch_main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-markers"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
