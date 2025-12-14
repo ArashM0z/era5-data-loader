@@ -17,3 +17,5 @@ xarray + Dask wrappers for ERA5-Land hourly reanalysis. Handles login flow, asyn
 <!-- maint 2025-09-27 -->
 
 <!-- maint 2025-11-06 -->
+
+<!-- maint 2025-12-14 -->
