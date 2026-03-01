@@ -1,37 +1,50 @@
 # ERA5 Data Loader
 
-xarray + Dask wrappers for ERA5-Land hourly reanalysis. Handles login flow, async downloads, on-disk caching, and aligned regridding to FIRMS pixel grids.
+xarray-based loader for ERA5-Land hourly reanalysis with bounding-box +
+time-range subsetting and a simple bilinear regridder.
 
-<!-- maint 2025-02-06 -->
+## What's in the box
 
-<!-- maint 2025-03-16 -->
+- `load_era5(path, variables=…)` — opens NetCDF or Zarr, renames the
+  `latitude`/`longitude`/`time` coordinates to the conventional
+  `lat`/`lon`/`time`, and (optionally) selects variables.
+- `subset(ds, bbox=…, time_range=…)` — slices in space (handles
+  descending-latitude conventions used by ERA5) and time.
+- `regrid_to(ds, lats, lons)` — bilinear interpolation onto an explicit
+  target grid (e.g. a FIRMS pixel grid).
+- `era5-fetch` CLI — either subsets a local file or, with `--config`
+  and the `[cds]` extra, hits the Copernicus CDS API via `cdsapi`.
 
-<!-- maint 2025-04-25 -->
+## Quickstart
 
-<!-- maint 2025-06-02 -->
+```bash
+pip install -e ".[dev]"
+# offline subset
+era5-fetch --input data/era5.nc \
+           --bbox 49 60 -139 -110 \
+           --time-start 2024-06-01 --time-end 2024-08-31 \
+           --variables t2m u10 v10 \
+           --out data/era5_west.nc
+```
 
-<!-- maint 2025-07-11 -->
+## CDS download config
 
-<!-- maint 2025-08-20 -->
+```yaml
+dataset: reanalysis-era5-land
+request:
+  variable: [2m_temperature, 10m_u_component_of_wind]
+  year: [2024]
+  month: [6, 7, 8]
+  day: [1, 2, 3]
+  area: [60, -139, 49, -110]   # [N, W, S, E]
+  format: netcdf
+```
 
-<!-- maint 2025-09-27 -->
+## Layout
 
-<!-- maint 2025-11-06 -->
-
-<!-- maint 2025-12-14 -->
-
-<!-- maint 2024-02-18 -->
-
-<!-- maint 2024-04-10 -->
-
-<!-- maint 2024-05-31 -->
-
-<!-- maint 2024-07-22 -->
-
-<!-- maint 2024-09-13 -->
-
-<!-- maint 2024-11-04 -->
-
-<!-- maint 2024-12-25 -->
-
-<!-- maint 2023-03-06 -->
+```
+src/era5/
+├── loader.py   # load + subset + regrid
+└── cli.py      # era5-fetch (CDS download + offline subset)
+tests/          # rename, bbox, time-range, validation, regrid
+```
